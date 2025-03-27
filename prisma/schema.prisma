@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -16,6 +17,7 @@ datasource db {
 model Product {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        String
+  //@unique 確保每個 slug 不能重複 | map: "product_slug_idx" 明確命名這個資料庫索引
   slug        String   @unique(map: "product_slug_idx")
   category    String
   images      String[]
@@ -27,5 +29,5 @@ model Product {
   numReviews  Int      @default(0)
   isFeatured  Boolean
   banner      String?
-  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  createdAt   DateTime @default(now()) @db.Timestamp(6) //@db.Timestamp(6)	PostgreSQL 的 timestamp 精度到小數點第六位
 }

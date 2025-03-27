@@ -9,7 +9,7 @@ interface PriceProps {
 export default function ProductPrice({ value, className }: PriceProps) {
   const stringValue = value.toFixed(2);
   const [intValue, floatValue] = stringValue.split(".");
-  console.log(`intValue:${intValue}, floatValue:${floatValue}`);
+  // console.log(`intValue:${intValue}, floatValue:${floatValue}`);
 
   return (
     <p className={cn("text-2xl", className)}>

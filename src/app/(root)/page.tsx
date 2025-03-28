@@ -1,3 +1,6 @@
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 import ProductList from "@/components/shared/product/product-list";
 // import sampleData from "../../../db/sample-data";
 import { getLatestProducts } from "@/lib/actions/product.action";
@@ -8,12 +11,16 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const latestProducts = await getLatestProducts();
-  console.log(latestProducts);
+  const latestProductsRaw = await getLatestProducts();
+  const latestProducts = latestProductsRaw.map((prod) => ({
+    ...prod,
+    price: prod.price.toString(),
+    rating: prod.rating.toString(),
+  }));
 
   return (
     <>
-      <ProductList data={latestProducts} title="Newest Arrival" />
+      <ProductList data={latestProducts} title="Newest Arrival" limit={4} />
     </>
   );
 }

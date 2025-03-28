@@ -5,11 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import ProductPrice from "@/components/shared/product/product-price";
+import ProductImages from "@/components/shared/product/product-images";
 
 export default async function ProductDetailPage(props: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = props.params;
+  const { slug } = await props.params;
   const product = await getProductBySlug(slug);
 
   if (!product) notFound();
@@ -21,7 +22,7 @@ export default async function ProductDetailPage(props: {
           {/* Images Column */}
           <div className="col-span-2">
             {/* Image Component */}
-            123
+            <ProductImages images={product.images} />
           </div>
           {/* Details Coulum */}
           <div className="col-span-2 p-5">
@@ -31,7 +32,7 @@ export default async function ProductDetailPage(props: {
               </p>
               <h1 className="h3-bold">{product.name}</h1>
               <p>
-                {product.rating} of {product.numReviews} Reviews
+                {Number(product.rating)} of {product.numReviews} Reviews
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <ProductPrice

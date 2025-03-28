@@ -3,7 +3,7 @@ import ProductCard from "./product-card";
 import { Product } from "../../../../types";
 
 interface ProductProps {
-  data: any;
+  data: Product[];
   title?: string;
   limit?: number;
 }

@@ -23,7 +23,7 @@ export const config = {
         password: { type: "password" },
       },
       // 登入驗證邏輯
-      async authorize(credentials, request) {
+      async authorize(credentials) {
         if (credentials == null) return null;
         const user = await prisma.user.findFirst({
           where: { email: credentials.email as string },
@@ -50,6 +50,7 @@ export const config = {
     }),
   ],
   callbacks: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, user, trigger, token }: any) {
       // Set the userID from the token
       session.user.id = token.sub;

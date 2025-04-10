@@ -9,7 +9,7 @@ interface ImagesProps {
 }
 
 export default function ProductImages({ images }: ImagesProps) {
-  console.log(images);
+  // console.log(images);
   const [current, setCurrent] = useState<number>(0);
 
   return (

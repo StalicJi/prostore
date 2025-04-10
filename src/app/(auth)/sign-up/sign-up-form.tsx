@@ -6,13 +6,13 @@ import { Label } from "@/components/ui/label";
 import { signUpDefaultValues } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { signInWithCredentials } from "@/lib/actions/user.action";
+import { signUpUser } from "@/lib/actions/user.action";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { useSearchParams } from "next/navigation";
 
-export default function CredentialSignInForm() {
-  const [data, action] = useActionState(signInWithCredentials, {
+export default function SignUpForm() {
+  const [data, action] = useActionState(signUpUser, {
     success: false,
     message: "",
   });
@@ -20,12 +20,12 @@ export default function CredentialSignInForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
-  const SignInButton = () => {
+  const SignUpButton = () => {
     const { pending } = useFormStatus();
 
     return (
       <Button disabled={pending} className="w-full" variant="default">
-        {pending ? "Signing in ..." : "Sign In"}
+        {pending ? "Submitting ..." : "Sign Up"}
       </Button>
     );
   };
@@ -35,12 +35,21 @@ export default function CredentialSignInForm() {
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
       <div className="space-y-6">
         <div className="space-y-2">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            name="name"
+            type="text"
+            autoComplete="name"
+            defaultValue={signUpDefaultValues.name}
+          />
+        </div>
+        <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             name="email"
             type="email"
-            required
             autoComplete="email"
             defaultValue={signUpDefaultValues.email}
           />
@@ -51,21 +60,30 @@ export default function CredentialSignInForm() {
             id="password"
             name="password"
             type="password"
-            required
             autoComplete="password"
             defaultValue={signUpDefaultValues.password}
           />
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword">ConfirmPassword</Label>
+          <Input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            autoComplete="confirmPassword"
+            defaultValue={signUpDefaultValues.confirmPassword}
+          />
+        </div>
         <div>
-          <SignInButton />
+          <SignUpButton />
         </div>
         {data && !data.success && (
           <div className="text-center text-destructive">{data.message}</div>
         )}
         <div className="text-sm text-center text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link href="/sign-up" target="_self" className="link">
-            Sign Up
+          Already have an account?{" "}
+          <Link href="/sign-in" target="_self" className="link">
+            Sign In
           </Link>
         </div>
       </div>

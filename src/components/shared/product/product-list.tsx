@@ -10,7 +10,7 @@ interface ProductProps {
 
 export default function ProductList({ data, title, limit }: ProductProps) {
   const limitedData = limit ? data.slice(0, limit) : data;
-  console.log(data);
+  // console.log(data);
 
   return (
     <div className="my-10">

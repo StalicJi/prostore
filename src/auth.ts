@@ -1,9 +1,9 @@
-import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "../db/prisma";
-import CredentialProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
-import type { NextAuthConfig } from "next-auth";
+import { authConfig } from "../auth.config";
+import { prisma } from "./db/prisma";
+import NextAuth from "next-auth";
+import CredentialProvider from "next-auth/providers/credentials";
 
 export const config = {
   pages: {
@@ -11,7 +11,7 @@ export const config = {
     error: "/sign-in",
   },
   session: {
-    strategy: "jwt", // 使用 JWT 作為 session 儲存方式（不使用 DB）
+    strategy: "jwt" as const, // 使用 JWT 作為 session 儲存方式（不使用 DB）
     maxAge: 30 * 24 * 60 * 60, // session 有效時間 30 天（秒）
   },
   adapter: PrismaAdapter(prisma),
@@ -50,10 +50,16 @@ export const config = {
     }),
   ],
   callbacks: {
+    ...authConfig.callbacks, // 從 auth.config 匯入的 callback
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, user, trigger, token }: any) {
       // Set the userID from the token
       session.user.id = token.sub;
+      session.user.role = token.role;
+      session.user.name = token.name;
+
+      // console.log(token);
+
       // If there is an update, set the user name
       if (trigger === "update") {
         session.user.name = user.name;
@@ -61,7 +67,26 @@ export const config = {
 
       return session;
     },
+
+    async jwt({ token, user, trigger, session }: any) {
+      // Assign user fields to token
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+
+        // If user has no name then use email
+        if (user.name === "NO_NAME") {
+          token.name = user.email!.split("@")[0];
+
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { name: token.name },
+          });
+        }
+      }
+      return token;
+    },
   },
-} satisfies NextAuthConfig;
+};
 
 export const { handlers, signIn, signOut, auth } = NextAuth(config);
